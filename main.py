@@ -5,6 +5,8 @@ from config.config import config
 from firebase_admin import credentials
 from firebase_admin import firestore
 
+import datetime
+
 cred = credentials.Certificate("./config/forum-28f86-firebase-adminsdk-laj3n-b037a8bd9e.json")
 forum_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
@@ -74,18 +76,24 @@ def forum_post():
     subject = request.form['post_subject']
     message = request.form['post_message']
     #image = request.form['post_image']
-
+    timestamp = (str(datetime.datetime.now()).split("."))[0]
     #Forming firestore document
     message = {
         'subject' : subject,
         'message' : message,
-        'image' : ''
+        'image' : '',
+        'timestamp' : timestamp
     }
 
     # Add to firestore collection posts
     db.collection('posts').add(message)
 
     return jsonify({ 'status' : "success"})
+
+
+@app.route("/user_page", methods=['GET'])
+def user_page_get():
+    return render_template('user_page.html')
 
 if __name__ == "__main__":
     app.run(debug=True)

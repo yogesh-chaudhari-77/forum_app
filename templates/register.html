@@ -1,8 +1,3 @@
-The register page contains an “ID” text field, a “Username” and a “Password” field, a “User Image”
-uploading field and a “Register” button. When user clicks the “Register” button, it will validate if the
-user entered id and username match with the information stored in the Google Datastore/Firebase
-
-
 {% include ('./partials/header.html') %}
 
 <script>
@@ -55,32 +50,54 @@ user entered id and username match with the information stored in the Google Dat
     // end of register function
 </script>
 
-<div class="container">
+<div class="container mt-3">
     <div class="row">
-        <div class="col-md-12">
-            <form onsubmit="event.preventDefault();" id="register_form">
-                <h5>Register</h5>
-                <label class="control-label">ID:</label>
-                <input type="text" id="id" class="input-md form-control" required />
+        <div class="col-md-4">
 
-                <label class="control-label">Username:</label>
-                <input type="text" id="username" class="input-md form-control" required />
+            <div class="card shadow-lg p-3 mb-5 bg-white rounded">
+                <div class="card-body">
+                  <h5 class="card-title">Register</h5>
+                  <h6 class="card-subtitle mb-2 text-muted">Awesome content is awating</h6>
 
-                <label class="control-label">Password:</label>
-                <input type="password" id="password" class="input-md form-control" required />
+                  <form onsubmit="event.preventDefault();" id="register_form">
 
-                <label class="control-label">Profile Picture:</label>
-                <input type="file" id="profile_picture" class="input-md form-control" required />
+                    <div class="form-group mb-3">
+                        <label class="control-label">ID:</label>
+                        <input type="text" id="id" class="input-md form-control" required />
+                    </div>
 
-                <br />
-                <span class="text-danger" id="register_form_err_msg" hidden></span>
-                <br />
-                <button class="btn btn-default btn-md" onclick="register();">Let's Get Started</button>
-            </form>
+                    <div class="form-group mb-3">
+                        <label class="control-label">Username:</label>
+                        <input type="text" id="username" class="input-md form-control" required />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="control-label">Password:</label>
+                        <input type="password" id="password" class="input-md form-control" required />
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label class="control-label">Profile Picture:</label>
+                        <input type="file" id="profile_picture" class="input-md form-control" required />
+                    </div>
+    
+                    <div class="form-group mb-3">
+                        <span class="text-danger" id="register_form_err_msg" hidden></span>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <button class="btn btn-dark btn-md form-control" onclick="register();">Let's Get Started</button>
+                    </div>
+                </form>
+
+                Already have an account ? <a href="{{config.application.base_url}}login">Login here</a>
+                </div>
+              </div>
+
+            
 
         </div>
 
-        Already have an account ? <a href="{{config.application.base_url}}login">Login here</a>
     </div>
 </div>
 {% include ('./partials/footer.html') %}

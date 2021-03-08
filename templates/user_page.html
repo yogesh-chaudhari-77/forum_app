@@ -1,48 +1,37 @@
 {% include ('./partials/header.html') %}
 
 <script>
-    function post_message() {
-        let ajaxRequest = new ajaxFunction();
-        let post_subject = document.getElementById("post_subject").value;
-        let post_message = document.getElementById("post_message").value;
-
-        var form_data = new FormData();
-        form_data.append("post_subject", post_subject);
-        form_data.append("post_message", post_message);
-        form_data.append("post_image", "");
-
-        ajaxRequest.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                var response = JSON.parse(this.responseText);
-
-                if (response.status == "failed") {
-                    document.getElementById("message_posting_form_err_msg").style.display = "block";
-                    document.getElementById("message_posting_form_err_msg").innerHTML = "";
-                    return;
-                } else {
-                    // Clear the error messages if any
-                    document.getElementById("message_posting_form_err_msg").style.display = "none";
-                    document.getElementById("message_posting_form_err_msg").innerHTML = "";
-                }
-            }
-        };
-
-        send_request(ajaxRequest, "POST", "{{config.application.base_url}}forum", form_data, null);
-    }
-    // end of post_message()
 </script>
 
 <div class="container mt-3">
     <div class="row">
-        <!-- Start of user area-->
-        <div class="col-md-3" id="user_area">
+        <!-- Start of password edit area-->
+        <div class="col-md-3" id="password_edit_area">
             <div class="card shadow p-3 mb-5 bg-white rounded">
                 <div class="card-body">
-                    <div class="text-center">
-                        <img src="" height="120px" width="120px" class='img img-responsive rounded'>
-                    </div>
+                    <h5 class="card-title">Edit Password</h5>
+
+                    <form onsubmit="event.preventDefault();" id="message_posting_form">
+
+                        <div class="form-group mb-3">
+                            <label class="control-label">Old Password:</label>
+                            <input type="text" id="old_password" class="input-md form-control" required />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="control-label">New Password:</label>
+                            <input id="new_password" class="input-md form-control" required />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <span class="text-danger" id="password_edit_form_err_msg" hidden></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <button class="btn btn-outline-dark btn-md form-control" onclick="" disabled>Change</button>
+                        </div>
+                    </form>
                 </div>
-                <h5 class="card-title text-center"><a href="#">Yogeshwar Chaudhari 1</a></h5>
             </div>
         </div>
         <!-- End of user area -->
@@ -55,8 +44,7 @@
 
                     <div class="card shadow p-3 mb-5 bg-white rounded">
                         <div class="card-body">
-                            <h5 class="card-title">Post a Message</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">Send it out to the world</h6>
+                            <h5 class="card-title">Edit Posts</h5>
 
                             <form onsubmit="event.preventDefault();" id="message_posting_form">
 
@@ -80,7 +68,7 @@
                                 </div>
 
                                 <div class="form-group mb-3">
-                                    <button class="btn btn-outline-dark btn-md" onclick="post_message();">Post</button>
+                                    <button class="btn btn-outline-dark btn-md form-control" onclick="post_message();" disabled>Post</button>
                                 </div>
                             </form>
 
@@ -88,8 +76,8 @@
                     </div>
                 </div>
                 <div class="col-md-6" id="">
-                    <h4>Messages</h4>
-                    <hr/>
+                    <h4>My Posts</h4>
+                    <hr />
                 </div>
             </div>
             <!-- Message posting area ends here -->
