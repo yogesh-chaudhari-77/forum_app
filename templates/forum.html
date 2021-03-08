@@ -1,0 +1,54 @@
+{% include ('./partials/header.html') %}
+
+<script>
+</script>
+
+<div class="container">
+    <div class="row">
+        <!-- Start of user area-->
+        <div class="col-md-4" id="user_area">
+        </div>
+        <!-- End of user area -->
+
+        <div class="col-md-8">
+
+            <!-- Message posting area starts here -->
+            <div class="row">
+                <div class="col-md-4">
+                    <form onsubmit="event.preventDefault();" id="message_posting_form">
+                        <h5>Login</h5>
+                        <label class="control-label">Subject:</label>
+                        <input type="text" id="post_subject" class="input-md form-control" required />
+
+                        <label class="control-label">Message:</label>
+                        <input type="text" id="post_message" class="input-md form-control" required />
+
+                        <label class="control-label">Image:</label>
+                        <input type="file" id="post_image" class="input-md form-control" required />
+
+                        <br />
+                        <span class="text-danger" id="message_posting_form_err_msg" hidden></span>
+                        <br />
+                        <button class="btn btn-default btn-md" onclick="post_message();">Post</button>
+                    </form>
+                </div>
+                <div class="col-md-8">
+                    <img>
+                    <h5 id="prev_post_subject"></h5>
+                    <p id="prev_post_message"></p>
+                </div>
+            </div>
+            <!-- Message posting area ends here -->
+
+            <!-- Message display area starts here -->
+            <div class="row">
+                <div class="col-md-12">
+                    <h4>User Messages</h4>
+                    <hr />
+                </div>
+            </div>
+            <!-- Message display area ends here -->
+        </div>
+    </div>
+</div>
+    {% include ('./partials/footer.html') %}
