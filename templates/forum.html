@@ -1,7 +1,70 @@
 {% include ('./partials/header.html') %}
 
 <script>
-    function post_message() {
+
+    $(document).ready(function () {
+        // Brings the latest 10 posts from all users and dumps into message area
+        load_latest_messages();
+
+        // UX improvement function - Change focus to post_message onClick of enter on post_subject
+        $('#post_subject').keypress(function (event) {
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            if (keycode == '13') {
+                $("#post_message").focus();
+            }
+        });
+
+        // UX improvement function - Change focus to post_image onClick of enter on post_message
+        $('#post_message').keypress(function (event) {
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            if (keycode == '13') {
+                $("#post_image").focus();
+            }
+        });
+
+    });
+
+    /**
+        Brings the latest 10 posts from all users and dumps into message area
+    */
+    function load_latest_messages() {
+        let ajaxRequest = new ajaxFunction();
+
+        ajaxRequest.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+
+                $("#messages").html("");
+                var response = JSON.parse(this.responseText);
+
+                if (response.status == "failed") {
+                    console.error("something went wrong while fetching the latest 10 posts")
+                    return;
+                } else {
+                    console.log(response);
+                    if (response && response.posts) {
+                        for (var i = 0, posts_len = response.posts.length; i < posts_len; i++) {
+                            var html_template = create_post_card(response.posts[i]);
+                            $("#messages").append(html_template);
+                        }
+
+                        if (response.posts.length == 0) {
+                            console.log("No posts received from the server");
+                        }
+                    }
+                }
+            }
+        };
+
+        send_request(ajaxRequest, "GET", "{{config.application.base_url}}posts/all", null, null);
+    }
+    // end of load_latest_messages();
+
+
+    /**
+        Sends the user post to server
+        endpoint: /forum
+    */
+    function send_msg() {
         let ajaxRequest = new ajaxFunction();
         let post_subject = document.getElementById("post_subject").value;
         let post_message = document.getElementById("post_message").value;
@@ -23,6 +86,11 @@
                     // Clear the error messages if any
                     document.getElementById("message_posting_form_err_msg").style.display = "none";
                     document.getElementById("message_posting_form_err_msg").innerHTML = "";
+
+                    if (response.post) {
+                        var html_template = create_post_card(response.post);
+                        $("#messages").prepend(html_template);
+                    }
                 }
             }
         };
@@ -30,6 +98,22 @@
         send_request(ajaxRequest, "POST", "{{config.application.base_url}}forum", form_data, null);
     }
     // end of post_message()
+
+
+    // Generates a html template for post card and returns it
+    function create_post_card(post) {
+        var post_card = "<div class='card mb-3'>" +
+            "<img class='card-img-top' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22574%22%20height%3D%22180%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20574%20180%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_17812173647%20text%20%7B%20fill%3Argba(255%2C255%2C255%2C.75)%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A29pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_17812173647%22%3E%3Crect%20width%3D%22574%22%20height%3D%22180%22%20fill%3D%22%23777%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22212.8125%22%20y%3D%22103.00312500000001%22%3E574x180%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' alt='Card image cap'>" +
+            "<div class='card-body'>" +
+            "   <h5 class='card-title'>" + post.subject + "</h5>" +
+            "   <p class='card-text'>" + post.message + "</p>" +
+            "   <p class='card-text'><small class='text-muted'>Posted on " + post.timestamp + "</small></p>" +
+            "</div>" +
+            "</div>";
+
+        return post_card;
+    }
+    // end of create_post_card()
 </script>
 
 <div class="container mt-3">
@@ -42,16 +126,17 @@
                         <img src="" height="120px" width="120px" class='img img-responsive rounded'>
                     </div>
                 </div>
-                <h5 class="card-title text-center"><a href="#">Yogeshwar Chaudhari 1</a></h5>
+                <h5 class="card-title text-center"><a
+                        href="{{config.application.base_url}}user_page">{{session['user_name']}}</a></h5>
             </div>
         </div>
         <!-- End of user area -->
 
-        <div class="col-md-8">
+        <div class="col-md-9">
 
             <!-- Message posting area starts here -->
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-5">
 
                     <div class="card shadow p-3 mb-5 bg-white rounded">
                         <div class="card-body">
@@ -80,16 +165,18 @@
                                 </div>
 
                                 <div class="form-group mb-3">
-                                    <button class="btn btn-outline-dark btn-md" onclick="post_message();">Post</button>
+                                    <button class="btn btn-outline-dark btn-md" onclick="send_msg()">Post</button>
                                 </div>
                             </form>
 
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6" id="">
+                <div class="col-md-7">
                     <h4>Messages</h4>
-                    <hr/>
+                    <hr />
+                    <div id="messages">
+                    </div>
                 </div>
             </div>
             <!-- Message posting area ends here -->

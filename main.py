@@ -1,5 +1,6 @@
 import firebase_admin
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, session, redirect
+import uuid
 from config.config import config
 
 from firebase_admin import credentials
@@ -10,7 +11,10 @@ import datetime
 cred = credentials.Certificate("./config/forum-28f86-firebase-adminsdk-laj3n-b037a8bd9e.json")
 forum_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
+
+
 app = Flask(__name__)
+app.secret_key = 's3828116_secret_key'
 
 # Defining a contex so that global variables can be accessed in the templates
 @app.context_processor
@@ -44,6 +48,11 @@ def login_post():
             user = doc.to_dict()
             if user['id'] == id and user['password'] == password:
                 res["status"] = "success"
+
+                # Setting the session data for tracking the user activity
+                session['id'] = user['id']
+                session['username'] = user['username']
+                #session['profile_picture'] = user['profile_picture']
             else :
                 res["status"] = "failed"
         break
@@ -61,7 +70,47 @@ def register_get():
 
 @app.route("/register", methods = ['POST'])
 def register_post():
-    return "register_post"
+
+    user_id = request.form['id']
+    username = request.form['username']
+    password = request.form['password']
+
+    res = {}
+
+    # Check if the id matches with any of the documents
+    docs = db.collection('users').where("id", "==", user_id).get()
+    print(len(docs))
+    if len(docs) != 0 :
+        return jsonify({'status' : 'failed', 'err_msg' : 'The ID already exists'})
+
+    # Check if the username matches with any of documents
+    docs = db.collection('users').where("username", "==", username).get()
+    print(len(docs))
+    if len(docs) != 0 :
+        return jsonify({'status' : 'failed', 'err_msg' : 'The username already exists'})
+
+    # If both are unique then form data packet for new user
+    new_user = {
+        'id': user_id,
+        'username': username,
+        'password': password,
+        'timestamp': (str(datetime.datetime.now()).split("."))[0]
+    }
+
+    # Add to firestore collection posts - document id will be id provided by user
+    db.collection('users').document(user_id).set(new_user)
+
+    return jsonify({'status': "success"})
+
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    # Unsetting the session variables
+    session.pop('username', None)
+    session.pop('id', None)
+
+    # Redirecting to login page
+    return redirect("/login", code=304);
 
 
 @app.route("/forum", methods=['GET'])
@@ -76,9 +125,13 @@ def forum_post():
     subject = request.form['post_subject']
     message = request.form['post_message']
     #image = request.form['post_image']
+    post_id = str(uuid.uuid4())
     timestamp = (str(datetime.datetime.now()).split("."))[0]
+
     #Forming firestore document
     message = {
+        'user_id' : session['id'],
+        'post_id' : post_id,
         'subject' : subject,
         'message' : message,
         'image' : '',
@@ -86,14 +139,48 @@ def forum_post():
     }
 
     # Add to firestore collection posts
-    db.collection('posts').add(message)
+    db.collection('posts').document(post_id).set(message)
 
-    return jsonify({ 'status' : "success"})
+    return jsonify({ 'status' : "success", 'post' : message})
 
 
 @app.route("/user_page", methods=['GET'])
 def user_page_get():
-    return render_template('user_page.html')
+    if validate_logged_in_status():
+        return render_template('user_page.html')
+    else :
+        return redirect("/login", code=304);
+
+
+@app.route("/posts/all", methods = ["GET"])
+def all_posts_get():
+    docs = db.collection('posts').order_by('timestamp').limit(10).stream()
+    posts = [];
+    for doc in docs :
+        post = doc.to_dict()
+        posts.append(post)
+
+    return jsonify({'status':'success', 'posts':posts})
+
+
+@app.route("/posts/user", methods = ["GET"])
+def user_posts_get():
+    docs = db.collection('posts').where('user_id', '==', session['id']).order_by('timestamp').limit(10).stream()
+    posts = [];
+    for doc in docs :
+        post = doc.to_dict()
+        posts.append(post)
+
+    return jsonify({'status':'success', 'posts':posts})
+
+
+# Checks whether the session data is set or not. Used for authenticated routing
+def validate_logged_in_status():
+
+    if 'id' in session :
+        return True
+    else :
+        return False
 
 if __name__ == "__main__":
     app.run(debug=True)

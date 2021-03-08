@@ -27,7 +27,7 @@
 
         ajaxRequest.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                var response = JSON.parse(response.responseText);
+                var response = JSON.parse(this.responseText);
 
                 if (response.status == "failed") {
                     document.getElementById("register_form_err_msg").style.display = "block";
@@ -45,7 +45,7 @@
             }
         };
 
-        send_request(ajaxRequest, "POST", "{{config.application.base_url}}login", form_data, null);
+        send_request(ajaxRequest, "POST", "{{config.application.base_url}}register", form_data, null);
     }
     // end of register function
 </script>
@@ -82,7 +82,7 @@
                     </div>
     
                     <div class="form-group mb-3">
-                        <span class="text-danger" id="register_form_err_msg" hidden></span>
+                        <span class="text-danger" id="register_form_err_msg" style="display:none;"></span>
                     </div>
                     
                     <div class="form-group mb-3">
