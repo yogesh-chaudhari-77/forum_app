@@ -1,6 +1,35 @@
 {% include ('./partials/header.html') %}
 
 <script>
+    function post_message() {
+        let ajaxRequest = new ajaxFunction();
+        let post_subject = document.getElementById("post_subject").value;
+        let post_message = document.getElementById("post_message").value;
+
+        var form_data = new FormData();
+        form_data.append("post_subject", post_subject);
+        form_data.append("post_message", post_message);
+        form_data.append("post_image", "");
+
+        ajaxRequest.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = JSON.parse(this.responseText);
+
+                if (response.status == "failed") {
+                    document.getElementById("message_posting_form_err_msg").style.display = "block";
+                    document.getElementById("message_posting_form_err_msg").innerHTML = "";
+                    return;
+                } else {
+                    // Clear the error messages if any
+                    document.getElementById("message_posting_form_err_msg").style.display = "none";
+                    document.getElementById("message_posting_form_err_msg").innerHTML = "";
+                }
+            }
+        };
+
+        send_request(ajaxRequest, "POST", "{{config.application.base_url}}forum", form_data, null);
+    }
+    // end of post_message()
 </script>
 
 <div class="container">
@@ -16,12 +45,12 @@
             <div class="row">
                 <div class="col-md-4">
                     <form onsubmit="event.preventDefault();" id="message_posting_form">
-                        <h5>Login</h5>
+                        <h5>Forum</h5>
                         <label class="control-label">Subject:</label>
                         <input type="text" id="post_subject" class="input-md form-control" required />
 
                         <label class="control-label">Message:</label>
-                        <input type="text" id="post_message" class="input-md form-control" required />
+                        <textarea id="post_message" class="input-md form-control" required></textarea>
 
                         <label class="control-label">Image:</label>
                         <input type="file" id="post_image" class="input-md form-control" required />

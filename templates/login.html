@@ -28,7 +28,7 @@
                     document.getElementById("login_form_err_msg").innerHTML = "";
 
                     // Redirect to the forum home screen
-                    window.location = "";
+                    window.location = "{{config.application.base_url}}forum";
                 }
             }
         };
@@ -44,10 +44,10 @@
             <form onsubmit="event.preventDefault();" id="login_form">
                 <h5>Login</h5>
                 <label class="control-label">ID:</label>
-                <input type="text" id="id" class="input-md form-control" required />
+                <input type="text" id="id" class="input-md form-control" value="s38281160" required />
 
                 <label class="control-label">Password:</label>
-                <input type="password" id="password" class="input-md form-control" required />
+                <input type="password" id="password" class="input-md form-control" value="012345" required />
                 <br />
                 <span class="text-danger" id="login_form_err_msg" hidden></span>
                 <br />
