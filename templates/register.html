@@ -1,0 +1,85 @@
+The register page contains an “ID” text field, a “Username” and a “Password” field, a “User Image”
+uploading field and a “Register” button. When user clicks the “Register” button, it will validate if the
+user entered id and username match with the information stored in the Google Datastore/Firebase
+
+
+{% include ('./partials/header.html') %}
+
+<script>
+
+    /**
+     * 
+     */
+    function validate_register_form() {
+
+    }
+    // End of validate_register_form()
+
+    function register() {
+        let ajaxRequest = new ajaxFunction();
+
+        // Getting basic fields
+        let id = document.getElementById("id").value;
+        let username = document.getElementById("username").value;
+        let password = document.getElementById("password").value;
+
+
+        // Packing the data packet
+        var form_data = new FormData();
+        form_data.append("id", id);
+        form_data.append("username", username);
+        form_data.append("password", password);
+
+        ajaxRequest.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = JSON.parse(response.responseText);
+
+                if (response.status == "failed") {
+                    document.getElementById("register_form_err_msg").style.display = "block";
+                    document.getElementById("register_form_err_msg").innerHTML = response.err_msg;
+                    return;
+                } else {
+
+                    // Clear the error messages if any
+                    document.getElementById("register_form_err_msg").style.display = "none";
+                    document.getElementById("register_form_err_msg").innerHTML = "";
+
+                    // Redirect to the login page for re-login using new credentials
+                    window.location = "{{config.application.base_url}}login";
+                }
+            }
+        };
+
+        send_request(ajaxRequest, "POST", "{{config.application.base_url}}login", form_data, null);
+    }
+    // end of register function
+</script>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <form onsubmit="event.preventDefault();" id="register_form">
+                <h5>Register</h5>
+                <label class="control-label">ID:</label>
+                <input type="text" id="id" class="input-md form-control" required />
+
+                <label class="control-label">Username:</label>
+                <input type="text" id="username" class="input-md form-control" required />
+
+                <label class="control-label">Password:</label>
+                <input type="password" id="password" class="input-md form-control" required />
+
+                <label class="control-label">Profile Picture:</label>
+                <input type="file" id="profile_picture" class="input-md form-control" required />
+
+                <br />
+                <span class="text-danger" id="register_form_err_msg" hidden></span>
+                <br />
+                <button class="btn btn-default btn-md" onclick="register();">Let's Get Started</button>
+            </form>
+
+        </div>
+
+        Already have an account ? <a href="{{config.application.base_url}}login">Login here</a>
+    </div>
+    {% include ('./partials/footer.html') %}

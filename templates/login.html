@@ -1,0 +1,61 @@
+{% include ('./partials/header.html') %}
+
+<script>
+    /**
+     *   
+     */
+    function login() {
+        let ajaxRequest = new ajaxFunction();
+        let id = document.getElementById("id").value;
+        let password = document.getElementById("password").value;
+
+        var form_data = new FormData();
+        form_data.append("id", id);
+        form_data.append("password", password);
+
+        ajaxRequest.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = JSON.parse(this.responseText);
+
+                if (response.status == "failed") {
+                    document.getElementById("login_form_err_msg").style.display = "block";
+                    document.getElementById("login_form_err_msg").innerHTML = "ID or password is invalid";
+                    return;
+                } else {
+
+                    // Clear the error messages if any
+                    document.getElementById("login_form_err_msg").style.display = "none";
+                    document.getElementById("login_form_err_msg").innerHTML = "";
+
+                    // Redirect to the forum home screen
+                    window.location = "";
+                }
+            }
+        };
+
+        send_request(ajaxRequest, "POST", "{{config.application.base_url}}login", form_data, null);
+    }
+    // End of login()
+</script>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <form onsubmit="event.preventDefault();" id="login_form">
+                <h5>Login</h5>
+                <label class="control-label">ID:</label>
+                <input type="text" id="id" class="input-md form-control" required />
+
+                <label class="control-label">Password:</label>
+                <input type="password" id="password" class="input-md form-control" required />
+                <br />
+                <span class="text-danger" id="login_form_err_msg" hidden></span>
+                <br />
+                <button class="btn btn-default btn-md" onclick="login();">Login</button>
+            </form>
+
+        </div>
+
+        Don't have an account? <a href="{{config.application.base_url}}register">Register here</a>
+    </div>
+    {% include ('./partials/footer.html') %}
