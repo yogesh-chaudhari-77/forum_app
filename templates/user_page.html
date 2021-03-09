@@ -2,6 +2,111 @@
 
 <script>
 
+    $(document).ready(function(){
+        load_user_latest_messages();
+    });
+
+    /**
+        Brings the latest 10 posts from all users and dumps into message area
+    */
+    function load_user_latest_messages() {
+        let ajaxRequest = new ajaxFunction();
+
+        ajaxRequest.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+
+                $("#messages").html("");
+                var response = JSON.parse(this.responseText);
+
+                if (response.status == "failed") {
+                    console.error("something went wrong while fetching the latest 10 posts")
+                    return;
+                } else {
+                    console.log(response);
+                    if (response && response.posts) {
+                        for (var i = 0, posts_len = response.posts.length; i < posts_len; i++) {
+                            var html_template = create_post_card(response.posts[i]);
+                            $("#messages").append(html_template);
+                        }
+
+                        if (response.posts.length == 0) {
+                            console.log("No posts received from the server");
+                        }
+                    }
+                }
+            }
+        };
+
+        send_request(ajaxRequest, "GET", "{{config.application.base_url}}posts/user", null, null);
+    }
+    // end of load_user_latest_messages();
+
+    // Generates a html template for post card and returns it
+    function create_post_card(post) {
+        var post_card = "<div class='card mb-3'>" +
+            "<img class='card-img-top' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22574%22%20height%3D%22180%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20574%20180%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_17812173647%20text%20%7B%20fill%3Argba(255%2C255%2C255%2C.75)%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A29pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_17812173647%22%3E%3Crect%20width%3D%22574%22%20height%3D%22180%22%20fill%3D%22%23777%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22212.8125%22%20y%3D%22103.00312500000001%22%3E574x180%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' alt='Card image cap'>" +
+            "<div class='card-body'>" +
+            "   <h5 class='card-title'>" + post.subject + "</h5>" +
+            "   <p class='card-text'>" + post.message + "</p>" +
+            "   <p class='card-text'><small class='text-muted'>Posted on " + post.timestamp + "</small><span class='float-right' onclick='populate_for_edit(\""+post.post_id+"\")'><i class='fa fa-pencil' aria-hidden='true'></i> Edit</span></p>" +
+            "</div>" +
+            "</div>";
+
+        return post_card;
+    }
+    // end of create_post_card()
+
+
+    function edit_password(){
+
+        $("#edit_password_btn").html("<i class='fa fa-spinner' aria-hidden='true'></i>");
+
+        var old_password = document.getElementById('old_password');
+        var new_password = document.getElementById('new_password');
+
+        let ajaxRequest = new ajaxFunction();
+
+        ajaxRequest.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = JSON.parse(this.responseText);
+                if(response.status == "success"){
+
+                    // Resetting error messages
+                    document.getElementById("password_edit_form_err_msg").style.display = "none";
+                    document.getElementById("password_edit_form_err_msg").innerHTML = "";
+
+                    // Reseting the input fields
+                    $("#old_password").val("");
+                    $("#new_password").val("");
+
+                    // Show confirmation message
+                    $("#edit_password_modal").modal('show');
+
+                    // Redirecting to the login page
+                    setTimeout(function(){
+                        window.location = "{{config.application.base_url}}login";
+                    },10000);
+
+                }else{
+                    document.getElementById("password_edit_form_err_msg").style.display = "block";
+                    document.getElementById("password_edit_form_err_msg").innerHTML = "The old password is incorrect";
+                    return;
+                }
+
+            }
+        }
+    }
+    // End of edit_password();
+
+
+    function populate_for_edit(doc_id){
+
+    }
+    // end of populate_for_edit();
+
+    function update_post(){
+
+    }
 </script>
 
 <div class="container mt-3">
@@ -21,7 +126,7 @@
 
                         <div class="form-group mb-3">
                             <label class="control-label">New Password:</label>
-                            <input id="new_password" class="input-md form-control" required />
+                            <input type="text" id="new_password" class="input-md form-control" required />
                         </div>
 
                         <div class="form-group mb-3">
@@ -29,7 +134,7 @@
                         </div>
 
                         <div class="form-group mb-3">
-                            <button class="btn btn-outline-dark btn-md form-control" onclick="edit_password" disabled>Change</button>
+                            <button class="btn btn-outline-dark btn-md form-control" id="edit_password_btn" onclick="edit_password">Change</button>
                         </div>
                     </form>
                 </div>
@@ -69,7 +174,7 @@
                                 </div>
 
                                 <div class="form-group mb-3">
-                                    <button class="btn btn-outline-dark btn-md form-control" onclick="post_message();" disabled>Post</button>
+                                    <button class="btn btn-outline-dark btn-md form-control" onclick="update_post();">Update</button>
                                 </div>
                             </form>
 
@@ -79,10 +184,36 @@
                 <div class="col-md-6" id="">
                     <h4>My Posts</h4>
                     <hr />
+                    <div id="messages">
+
+                    </div>
                 </div>
             </div>
             <!-- Message posting area ends here -->
         </div>
     </div>
+
+    <!-- Password Change Modal -->
+    <div class="modal" id="edit_password_modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Your password has been updated successfully. You will redirected in 10 secs to login page to login using new password.</p>
+          <a href="{{config.application.base_url}}login">Click here</a> for forced redirect.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+    <!-- Password Change Modal Ends Here -->
+
 </div>
 {% include ('./partials/footer.html') %}

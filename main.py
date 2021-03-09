@@ -154,7 +154,7 @@ def user_page_get():
 
 @app.route("/posts/all", methods = ["GET"])
 def all_posts_get():
-    docs = db.collection('posts').order_by('timestamp').limit(10).stream()
+    docs = db.collection('posts').order_by('timestamp', direction=firestore.Query.DESCENDING).limit(10).stream()
     posts = [];
     for doc in docs :
         post = doc.to_dict()
@@ -165,13 +165,22 @@ def all_posts_get():
 
 @app.route("/posts/user", methods = ["GET"])
 def user_posts_get():
-    docs = db.collection('posts').where('user_id', '==', session['id']).order_by('timestamp').limit(10).stream()
+    docs = db.collection('posts').where('user_id', '==', session['id']).order_by('timestamp', direction=firestore.Query.DESCENDING).limit(10).stream()
     posts = [];
     for doc in docs :
         post = doc.to_dict()
         posts.append(post)
 
     return jsonify({'status':'success', 'posts':posts})
+
+@app.route("/posts/<id>", methods=['GET'])
+def post_get(id):
+    doc = db.collection('posts').document(id).get()
+
+    if doc.exists:
+        post = doc.to_dict();
+
+    return jsonify({'status': 'success', 'post': post})
 
 
 # Checks whether the session data is set or not. Used for authenticated routing
