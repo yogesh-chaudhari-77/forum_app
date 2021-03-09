@@ -59,15 +59,17 @@
 
     function edit_password(){
 
-        $("#edit_password_btn").html("<i class='fa fa-spinner' aria-hidden='true'></i>");
+        $("#edit_password_btn").html("<i class='fa fa-spinner fa-spin' aria-hidden='true'></i>");
 
-        var old_password = document.getElementById('old_password');
-        var new_password = document.getElementById('new_password');
+        var formData = new FormData();
+        formData.append('old_password', document.getElementById('old_password').value);
+        formData.append('new_password', document.getElementById('new_password').value);
 
         let ajaxRequest = new ajaxFunction();
 
         ajaxRequest.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
+                $("#edit_password_btn").html("Change");
                 var response = JSON.parse(this.responseText);
                 if(response.status == "success"){
 
@@ -89,18 +91,30 @@
 
                 }else{
                     document.getElementById("password_edit_form_err_msg").style.display = "block";
-                    document.getElementById("password_edit_form_err_msg").innerHTML = "The old password is incorrect";
+                    document.getElementById("password_edit_form_err_msg").innerHTML = response.err_msg;
                     return;
                 }
 
             }
         }
+
+         send_request(ajaxRequest, "POST", "{{config.application.base_url}}user/edit_password", formData, null);
     }
     // End of edit_password();
 
 
     function populate_for_edit(doc_id){
+        $("#update_post_btn").html("Fetching Post");
+        let ajaxRequest = new ajaxFunction();
 
+        ajaxRequest.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = JSON.parse(this.responseText);
+            }
+        }
+
+
+        $("#update_post_btn").html("Update Post");
     }
     // end of populate_for_edit();
 
@@ -134,7 +148,7 @@
                         </div>
 
                         <div class="form-group mb-3">
-                            <button class="btn btn-outline-dark btn-md form-control" id="edit_password_btn" onclick="edit_password">Change</button>
+                            <button class="btn btn-outline-dark btn-md form-control" id="edit_password_btn" onclick="edit_password();">Change</button>
                         </div>
                     </form>
                 </div>
@@ -174,7 +188,7 @@
                                 </div>
 
                                 <div class="form-group mb-3">
-                                    <button class="btn btn-outline-dark btn-md form-control" onclick="update_post();">Update</button>
+                                    <button class="btn btn-outline-dark btn-md form-control" id="update_post_btn" onclick="update_post();">Update</button>
                                 </div>
                             </form>
 
@@ -197,18 +211,11 @@
     <div class="modal" id="edit_password_modal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
       <div class="modal-body">
-        <p>Your password has been updated successfully. You will redirected in 10 secs to login page to login using new password.</p>
+          <p class="mt-3 text-center"><i class="text-success fa fa-check-circle fa-4x" aria-hidden="true"></i></p>
+            <p class="mt-3">
+            Your password has been updated successfully. You will redirected in 10 secs to login page to login using new password.</p>
           <a href="{{config.application.base_url}}login">Click here</a> for forced redirect.
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save changes</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>

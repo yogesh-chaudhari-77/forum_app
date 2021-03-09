@@ -103,6 +103,41 @@ def register_post():
     return jsonify({'status': "success"})
 
 
+@app.route("/user/edit_password", methods=['POST'])
+def edit_password() :
+
+    res = dict()
+
+    if validate_logged_in_status() == True :
+
+        #Variable sanitizaztion
+        user_id = session['id']
+        old_password = request.form['old_password']
+        new_password = request.form['new_password']
+
+        #Get the user document to match the password
+        doc = db.collection("users").document(user_id).get();
+        user_doc = doc.to_dict()
+
+        #Password match
+        if user_doc['password'] == old_password :
+
+            #Update the password for this user
+            db.collection("users").document(user_id).set({
+                'password' : new_password
+            }, merge=True)
+
+            return jsonify({'status':'success'})
+        else:
+            #Old password did not match with the database entry
+            return jsonify({'status':'failed', 'err_msg':"The old password is incorrect"})
+
+    else :
+        # User is not logged in
+        return redirect('/login', code=304)
+
+
+
 @app.route('/logout', methods=['GET'])
 def logout():
     # Unsetting the session variables
