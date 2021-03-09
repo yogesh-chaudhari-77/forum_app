@@ -1,12 +1,15 @@
-import firebase_admin
-from flask import Flask, render_template, jsonify, request, session, redirect
-import uuid
 from config.config import config
+from flask import Flask, render_template, jsonify, request, session, redirect
+import uuid, datetime
 
+
+"""
+Add the Firebase Admin SDK to your server
+Add the Firebase Admin SDK to your server (2021). Available at: https://firebase.google.com/docs/admin/setup (Accessed: 9 March 2021).
+"""
+import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
-
-import datetime
 
 cred = credentials.Certificate("./config/forum-28f86-firebase-adminsdk-laj3n-b037a8bd9e.json")
 forum_app = firebase_admin.initialize_app(cred)
@@ -17,6 +20,10 @@ app = Flask(__name__)
 app.secret_key = 's3828116_secret_key'
 
 # Defining a contex so that global variables can be accessed in the templates
+"""
+Templates — Flask Documentation (1.1.x)
+Templates — Flask Documentation (1.1.x) (2021). Available at: https://flask.palletsprojects.com/en/1.1.x/templating/ (Accessed: 9 March 2021).
+"""
 @app.context_processor
 def get_global_config():
   return {"config": config}

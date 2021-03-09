@@ -1,0 +1,18 @@
+gcloud init 
+
+It lets you select the project from the google cloud platform.
+Is is a everytime process as I can see the associated project with this init command. How does it go?
+
+
+
+Use this command to generate the requirements.txt file
+pip3 freeze > requirements.txt 
+
+
+
+handlers:
+-   url: /static
+    static_dir: static
+    
+-   url /.*
+    script: auto
