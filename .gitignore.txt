@@ -1,1 +1,4 @@
 /config/forum-28f86-firebase-adminsdk-laj3n-b037a8bd9e.json
+/config/forum-48a039cf0679-google-cloud-project-owner-service-account.json
+
+/config/*

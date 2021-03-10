@@ -1,0 +1,25 @@
+{% include ('./partials/header.html') %}
+
+<script>
+    async function uploadFile(){
+
+        let formData = new FormData();
+
+        let fileupload = document.getElementById("fileupload");
+        formData.append("file", fileupload.files[0]);
+        await fetch('/', {
+            method: "POST",
+            body: formData
+        });
+        alert('The file has been uploaded successfully.');
+    }
+</script>
+
+<div class="container mt-3">
+    <div class="row">
+
+        <input id="fileupload" type="file" name="fileupload" />
+        <button id="upload-button" onclick="uploadFile()"> Upload </button>
+    </div>
+</div>
+{% include ('./partials/footer.html') %}

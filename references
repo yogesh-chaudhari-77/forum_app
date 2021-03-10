@@ -29,3 +29,14 @@ Quickstart — Flask Documentation (1.1.x)
 Context Processors
 Templates — Flask Documentation (1.1.x)
 Templates — Flask Documentation (1.1.x) (2021). Available at: https://flask.palletsprojects.com/en/1.1.x/templating/ (Accessed: 9 March 2021).
+
+
+"""
+Uploading objects  |  Cloud Storage  |  Google Cloud
+Uploading objects  |  Cloud Storage  |  Google Cloud (2021). Available at: https://cloud.google.com/storage/docs/uploading-objects#storage-upload-object-python (Accessed: 9 March 2021).
+"""
+
+"""
+Uploading Files — Flask Documentation (1.1.x)
+Uploading Files — Flask Documentation (1.1.x) (2021). Available at: https://flask.palletsprojects.com/en/1.1.x/patterns/fileuploads/ (Accessed: 9 March 2021).
+"""
