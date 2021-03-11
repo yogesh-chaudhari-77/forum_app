@@ -1,5 +1,17 @@
 {% include ('./partials/header.html') %}
 
+<style>
+    .hand-cursor
+    {
+        cursor: pointer;
+    }
+
+    /* No scroll bar for messgaes area */
+    #messages::-webkit-scrollbar {
+      display: none;
+    }
+</style>
+
 <script>
 
     $(document).ready(function(){
@@ -43,12 +55,15 @@
 
     // Generates a html template for post card and returns it
     function create_post_card(post) {
+        var default_img = "data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22574%22%20height%3D%22180%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20574%20180%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_17812173647%20text%20%7B%20fill%3Argba(255%2C255%2C255%2C.75)%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A29pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_17812173647%22%3E%3Crect%20width%3D%22574%22%20height%3D%22180%22%20fill%3D%22%23777%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22212.8125%22%20y%3D%22103.00312500000001%22%3E574x180%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E";
+        var image_url = (post.image == "" || post.image == null) ? default_img : post.image;
+
         var post_card = "<div class='card mb-3'>" +
-            "<img class='card-img-top' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22574%22%20height%3D%22180%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20574%20180%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_17812173647%20text%20%7B%20fill%3Argba(255%2C255%2C255%2C.75)%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A29pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_17812173647%22%3E%3Crect%20width%3D%22574%22%20height%3D%22180%22%20fill%3D%22%23777%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22212.8125%22%20y%3D%22103.00312500000001%22%3E574x180%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' alt='Card image cap'>" +
+            "<img class='card-img-top' src='"+image_url+"' alt='Card image cap' max-height='180' max-width='574'>" +
             "<div class='card-body'>" +
             "   <h5 class='card-title'>" + post.subject + "</h5>" +
             "   <p class='card-text'>" + post.message + "</p>" +
-            "   <p class='card-text'><small class='text-muted'>Posted on " + post.timestamp + "</small><span class='float-right' onclick='populate_for_edit(\""+post.post_id+"\")'><i class='fa fa-pencil' aria-hidden='true'></i> Edit</span></p>" +
+            "   <p class='card-text'><small class='text-muted'>Posted on " + post.timestamp + "</small> <span class='float-right hand-cursor' onclick='populate_for_edit(\""+post.post_id+"\")'><i class='fa fa-pencil' aria-hidden='true'></i> Edit</span></p>" +
             "</div>" +
             "</div>";
 
@@ -104,23 +119,66 @@
 
 
     function populate_for_edit(doc_id){
-        $("#update_post_btn").html("Fetching Post");
+
+        $("#update_post_btn").html("<i class='fa fa-spinner fa-spin' aria-hidden='true'></i> Fetching Post");
         let ajaxRequest = new ajaxFunction();
 
         ajaxRequest.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
                 var response = JSON.parse(this.responseText);
+                if(response.status == "success"){
+                    document.getElementById("post_doc_id").value = response.post.post_id;
+                    document.getElementById("post_id").value = response.post.post_id;
+                    document.getElementById("post_subject").value = response.post.subject;
+                    document.getElementById("post_message").value = response.post.message;
+
+                    $("#update_post_btn").html("Update Post");
+                }
             }
         }
 
-
-        $("#update_post_btn").html("Update Post");
+        send_request(ajaxRequest, "GET", "{{config.application.base_url}}posts/"+doc_id, null, null);
     }
     // end of populate_for_edit();
 
     function update_post(){
 
+        $("#update_post_btn").html("<i class='fa fa-spinner fa-spin' aria-hidden='true'></i> Saving");
+        let ajaxRequest = new ajaxFunction();
+
+        let post_subject = document.getElementById("post_subject").value;
+        let post_message = document.getElementById("post_message").value;
+        let post_image = document.getElementById("post_image");
+
+        var form_data = new FormData();
+        form_data.append("post_doc_id", document.getElementById("post_doc_id").value);
+        form_data.append("post_id", document.getElementById("post_id").value);
+        form_data.append("post_subject", post_subject);
+        form_data.append("post_message", post_message);
+
+        //Grabbing the first file. //If no file has been selected, the file attribute will be undefined.
+        form_data.append("file", post_image.files[0]);
+
+        ajaxRequest.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = JSON.parse(this.responseText);
+
+                if(response.status == "success"){
+                    document.getElementById("message_posting_form").reset();
+                    load_user_latest_messages();
+
+                }else{
+                    document.getElementById("password_edit_form_err_msg").style.display = "block";
+                    document.getElementById("password_edit_form_err_msg").innerHTML = response.err_msg;
+                }
+
+                $("#update_post_btn").html("Update");
+            }
+        }
+
+        send_request(ajaxRequest, "PUT", "{{config.application.base_url}}edit_post", form_data, null);
     }
+
 </script>
 
 <div class="container mt-3">
@@ -156,17 +214,27 @@
         </div>
         <!-- End of user area -->
 
-        <div class="col-md-8">
+        <div class="col-md-9">
 
             <!-- Message posting area starts here -->
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-5">
 
                     <div class="card shadow p-3 mb-5 bg-white rounded">
                         <div class="card-body">
                             <h5 class="card-title">Edit Posts</h5>
 
                             <form onsubmit="event.preventDefault();" id="message_posting_form">
+
+                                <div class="form-group mb-3" hidden>
+                                    <label class="control-label">Subject:</label>
+                                    <input type="hidden" id="post_doc_id" class="input-md form-control"/>
+                                </div>
+
+                                <div class="form-group mb-3" hidden>
+                                    <label class="control-label">Subject:</label>
+                                    <input type="hidden" id="post_id" class="input-md form-control"/>
+                                </div>
 
                                 <div class="form-group mb-3">
                                     <label class="control-label">Subject:</label>
@@ -180,7 +248,7 @@
 
                                 <div class="form-group mb-3">
                                     <label class="control-label">Image:</label>
-                                    <input type="file" id="post_image" class="input-md form-control" required />
+                                    <input type="file" id="post_image" class="input-md form-control"/>
                                 </div>
 
                                 <div class="form-group mb-3">
@@ -195,10 +263,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6" id="">
+                <div class="col-md-7" id="">
                     <h4>My Posts</h4>
                     <hr />
-                    <div id="messages">
+                    <div id="messages" style="overflow:auto;max-height: 75vh;">
 
                     </div>
                 </div>

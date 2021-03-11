@@ -17,13 +17,14 @@
         let id = document.getElementById("id").value;
         let username = document.getElementById("username").value;
         let password = document.getElementById("password").value;
-
+        let profile_picture = document.getElementById("profile_picture");
 
         // Packing the data packet
         var form_data = new FormData();
         form_data.append("id", id);
         form_data.append("username", username);
         form_data.append("password", password);
+        form_data.append("file", profile_picture.files[0]);           //Grabbing the first file
 
         ajaxRequest.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {

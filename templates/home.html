@@ -1,25 +1,33 @@
 {% include ('./partials/header.html') %}
 
-<script>
-    async function uploadFile(){
-
-        let formData = new FormData();
-
-        let fileupload = document.getElementById("fileupload");
-        formData.append("file", fileupload.files[0]);
-        await fetch('/', {
-            method: "POST",
-            body: formData
-        });
-        alert('The file has been uploaded successfully.');
-    }
-</script>
-
 <div class="container mt-3">
     <div class="row">
 
-        <input id="fileupload" type="file" name="fileupload" />
-        <button id="upload-button" onclick="uploadFile()"> Upload </button>
+        <div class="col-md-12">
+            <div class="text-center mt-5">
+                <h1 style="font-size:85px">Dead Simple Forum</h1>
+            </div>
+            <hr/>
+            <br/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="">
+                <ul class="list-group list-group-horizontal text-center">
+                    <li class="list-group-item active">Tech Stack</li>
+                    <li class="list-group-item flex-fill">Google App Engine</li>
+                    <li class="list-group-item flex-fill">Firebase Cloud Firestore</li>
+                    <li class="list-group-item flex-fill">Google Cloud Storage</li>
+                    <li class="list-group-item flex-fill">Python using Flask</li>
+                    <li class="list-group-item flex-fill">Bootstrap 5.0</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-8">
+
+        </div>
     </div>
 </div>
 {% include ('./partials/footer.html') %}

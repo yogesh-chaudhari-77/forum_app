@@ -94,6 +94,9 @@
                     document.getElementById("message_posting_form_err_msg").style.display = "none";
                     document.getElementById("message_posting_form_err_msg").innerHTML = "";
 
+                    // Reseting form fields
+                    document.getElementById("message_posting_form").reset();
+
                     if (response.post) {
                         var html_template = create_post_card(response.post);
                         $("#messages").prepend(html_template);
@@ -132,11 +135,11 @@
             <div class="card shadow p-3 mb-5 bg-white rounded">
                 <div class="card-body">
                     <div class="text-center">
-                        <img src="" height="120px" width="120px" class='img img-responsive rounded'>
+                        <img src="{{session['profile_picture']}}" height="120px" width="120px" class='img img-responsive rounded-circle'>
                     </div>
                 </div>
-                <h5 class="card-title text-center"><a
-                        href="{{config.application.base_url}}user_page">{{session['username']}}</a></h5>
+                <h5 class="card-title text-center">
+                    <a href="{{config.application.base_url}}user_page" style="color: inherit;text-decoration: none;">{{session['username']}}</a></h5>
             </div>
         </div>
         <!-- End of user area -->
@@ -174,7 +177,7 @@
                                 </div>
 
                                 <div class="form-group mb-3">
-                                    <button class="btn btn-outline-dark btn-md" onclick="send_msg()">Post</button>
+                                    <button class="btn btn-outline-dark btn-md form-control" onclick="send_msg()">Post</button>
                                 </div>
                             </form>
 

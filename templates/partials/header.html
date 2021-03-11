@@ -15,6 +15,10 @@
     integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
     crossorigin="anonymous"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <script>
+  </script>
+
 </head>
 
 <html>
@@ -33,10 +37,23 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{{config.application.base_url}}forum">Home</a>
+            <a class="nav-link active" aria-current="page" href="{{config.application.base_url}}forum"><i class="fa fa-home" aria-hidden="true"></i></a>
           </li>
+          {% if session and 'id' in session %}
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{{config.application.base_url}}user_page"><i class="fa fa-user" aria-hidden="true"></i></a>
+          </li>
+          {% endif %}
         </ul>
-        <a href="{{config.application.base_url}}logout" class="btn btn-outline-success">Logout</a>
+
+        {% if 'id' not in session %}
+        <a class="btn btn-outline-dark" aria-current="page" href="{{config.application.base_url}}login"><i class="fa fa-sign-in" aria-hidden="true"></i> Login</a>
+        &nbsp;
+        <a class="btn btn-outline-dark" aria-current="page" href="{{config.application.base_url}}register"><i class="fa fa-user-plus" aria-hidden="true"></i> Register</a>
+        {% endif %}
+        {% if session and 'id' in session %}
+        <a href="{{config.application.base_url}}logout" class="btn btn-outline-danger"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a>
+        {% endif %}
       </div>
     </div>
   </nav>

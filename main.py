@@ -106,7 +106,7 @@ def login_post():
                 # Setting the session data for tracking the user activity
                 session['id'] = user['id']
                 session['username'] = user['username']
-                #session['profile_picture'] = user['profile_picture']
+                session['profile_picture'] = user['profile_picture']
             else :
                 res["status"] = "failed"
         break
@@ -131,6 +131,28 @@ def register_post():
 
     res = {}
 
+    # Checking the status of file
+    if 'file' in request.files:
+        file = request.files['file']
+
+        # Saving file to server
+        if file.filename != '' and file and allowed_file(file.filename):
+            img_change = True
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            # Upload the saved file to google cloud storage
+            bucket = storage_client.bucket(config['google_cloud']['bucket_name'])
+            source_file_name = os.path.join(app.config['UPLOAD_FOLDER'], filename)  # Uploading recently saved file
+            destination_blob_name = filename + "-" + str(uuid.uuid4())  # destination file name
+
+            blob = bucket.blob(destination_blob_name)
+            blob.upload_from_filename(source_file_name);
+            blob.make_public()
+
+            # Delete the local file
+            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
     # Check if the id matches with any of the documents
     docs = db.collection('users').where("id", "==", user_id).get()
     print(len(docs))
@@ -148,6 +170,7 @@ def register_post():
         'id': user_id,
         'username': username,
         'password': password,
+        'profile_picture': blob.public_url,
         'timestamp': (str(datetime.datetime.now()).split("."))[0]
     }
 
@@ -197,9 +220,13 @@ def logout():
     # Unsetting the session variables
     session.pop('username', None)
     session.pop('id', None)
+    session.pop('profile_picture', None)
+
+    # and everything else
+    session.clear()
 
     # Redirecting to login page
-    return redirect("/login", code=304);
+    return redirect("/login");
 
 
 @app.route("/forum", methods=['GET'])
@@ -254,6 +281,59 @@ def forum_post():
 
     # Add to firestore collection posts
     db.collection('posts').document(post_id).set(message)
+
+    return jsonify({ 'status' : "success", 'post' : message})
+
+
+@app.route("/edit_post", methods=['PUT'])
+def edit_post():
+
+    # sanitise the input
+    post_doc_id = request.form['post_doc_id']
+    post_id = request.form['post_id']
+    subject = request.form['post_subject']
+    message = request.form['post_message']
+    img_change = False
+
+    #Checking the status of file
+    if 'file' in request.files:
+        file = request.files['file']
+
+        # Saving file to server
+        if file.filename != '' and file and allowed_file(file.filename):
+            img_change = True
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            # Upload the saved file to google cloud storage
+            bucket = storage_client.bucket(config['google_cloud']['bucket_name'])
+            source_file_name = os.path.join(app.config['UPLOAD_FOLDER'], filename)  # Uploading recently saved file
+            destination_blob_name = filename + "-" + str(uuid.uuid4())  # destination file name
+
+            blob = bucket.blob(destination_blob_name)
+            blob.upload_from_filename(source_file_name);
+            blob.make_public()
+
+            # Delete the local file
+            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+    timestamp = (str(datetime.datetime.now()).split("."))[0]
+
+    #Forming firestore document
+    message = {
+        'user_id' : session['id'],
+        'post_id' : post_id,
+        'subject' : subject,
+        'message' : message,
+        'timestamp' : timestamp
+    }
+
+    # Img has been changed, and new image has been uploaded, so change the document as well
+    if img_change:
+        message['image'] = blob.public_url
+
+    # Add to firestore collection posts
+    db.collection('posts').document(post_id).set(message, merge=True)
 
     return jsonify({ 'status' : "success", 'post' : message})
 
