@@ -15,11 +15,11 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 from google.cloud import storage
 
-cred = credentials.Certificate("./config/forum-28f86-firebase-adminsdk-laj3n-b037a8bd9e.json")
+cred = credentials.Certificate("./config/forum-firebase-project-firebase-adminsdk-6imbv-9e7b32d5b3.json")
 forum_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-storage_client = storage.Client.from_service_account_json('config/forum-48a039cf0679-google-cloud-project-owner-service-account.json')
+storage_client = storage.Client.from_service_account_json('config/forum-google-cloud-service-account.json')
 
 
 app = Flask(__name__)

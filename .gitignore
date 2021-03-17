@@ -1,0 +1,7 @@
+config
+config/
+config/forum-firebase-project-firebase-adminsdk-6imbv-9e7b32d5b3.json
+config/forum-google-cloud-service-account.json
+/config/forum-firebase-project-firebase-adminsdk-6imbv-9e7b32d5b3.json
+/config/forum-google-cloud-service-account.json
+/config/*
