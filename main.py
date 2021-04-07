@@ -1,3 +1,4 @@
+#[11] - Introduction to flask
 import os
 
 from werkzeug.utils import secure_filename
@@ -6,19 +7,23 @@ from config.config import config
 from flask import Flask, render_template, jsonify, request, session, redirect
 import uuid, datetime
 
-"""
-Add the Firebase Admin SDK to your server
-Add the Firebase Admin SDK to your server (2021). Available at: https://firebase.google.com/docs/admin/setup (Accessed: 9 March 2021).
-"""
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from google.cloud import storage
 
+"""
+Add the Firebase Admin SDK to your server
+Add the Firebase Admin SDK to your server (2021). Available at: https://firebase.google.com/docs/admin/setup (Accessed: 9 March 2021).
+"""
 cred = credentials.Certificate("./config/forum-firebase-project-firebase-adminsdk-6imbv-9e7b32d5b3.json")
 forum_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
+"""
+Authenticating as a service account  |  Authentication  |  Google Cloud
+Authenticating as a service account  |  Authentication  |  Google Cloud (2021). Available at: https://cloud.google.com/docs/authentication/production (Accessed: 7 April 2021).
+"""
 storage_client = storage.Client.from_service_account_json('config/forum-google-cloud-service-account.json')
 
 
@@ -28,7 +33,7 @@ app.config['UPLOAD_FOLDER'] = config['application']['upload_folder']
 
 # Defining a contex so that global variables can be accessed in the templates
 """
-Templates — Flask Documentation (1.1.x)
+[12] Templates — Flask Documentation (1.1.x)
 Templates — Flask Documentation (1.1.x) (2021). Available at: https://flask.palletsprojects.com/en/1.1.x/templating/ (Accessed: 9 March 2021).
 """
 @app.context_processor
@@ -39,44 +44,14 @@ def get_global_config():
 def home():
     return render_template("home.html");
 
-"""
-Uploading Files — Flask Documentation (1.1.x)
-Uploading Files — Flask Documentation (1.1.x) (2021). Available at: https://flask.palletsprojects.com/en/1.1.x/patterns/fileuploads/ (Accessed: 9 March 2021).
-Function that checks that file being uploaded is one of allowed types
-"""
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in config['application']['allowed_extensions']
+# def allowed_file(filename):
+#     return '.' in filename and \
+#            filename.rsplit('.', 1)[1].lower() in config['application']['allowed_extensions']
 
-@app.route("/", methods=["POST"])
-def home_post():
-
-    if request.method == 'POST':
-        if 'file' not in request.files:
-            return ({"status": "failed", "err_msg":"No file found. Please try again"});
-        file = request.files['file']
-
-        if file.filename == '':
-            return ({"status": "failed", "err_msg":"Please select a file and try again"});
-
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))      #Saving file to server
-
-        # Upload the saved file to google cloud storage
-        bucket = storage_client.bucket(config['google_cloud']['bucket_name'])
-        source_file_name = os.path.join(app.config['UPLOAD_FOLDER'], filename)  #Uploading recently saved file                                           #
-        destination_blob_name = filename+"-"+str(uuid.uuid4())                  #destination file name
-
-        blob = bucket.blob(destination_blob_name)
-        blob.upload_from_filename(source_file_name);
-
-        #Delete the local file
-        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
-        return ({"status": "success"});
-    else :
-        return ({"status": "failed", "err_msg":"This must be a post request"});
+def check_file_eligibility(filename):
+    filename_tokens = os.path.splitext(filename)
+    file_extension = filename_tokens[1]
+    return (file_extension in config['application']['allowed_extensions'])
 
 
 @app.route("/login", methods = ['GET'])
@@ -117,10 +92,29 @@ def login_post():
 
     return jsonify(res)
 
+
 @app.route("/register", methods = ['GET'])
 def register_get():
     return render_template("register.html")
 
+"""
+[4] - Uploading File
+Uploading Files — Flask Documentation (1.1.x)
+Uploading Files — Flask Documentation (1.1.x) (2021). Available at: https://flask.palletsprojects.com/en/1.1.x/patterns/fileuploads/ (Accessed: 9 March 2021).
+Function that checks that file being uploaded is one of allowed types
+
+[5] - Uploading Objects to Google Cloud
+Uploading objects  |  Cloud Storage  |  Google Cloud
+Uploading objects  |  Cloud Storage  |  Google Cloud (2021). Available at: https://cloud.google.com/storage/docs/uploading-objects#storage-upload-object-python (Accessed: 9 March 2021).
+
+[6] - Read Firestore Data
+Get data with Cloud Firestore  |  Firebase
+Get data with Cloud Firestore  |  Firebase (2021). Available at: https://firebase.google.com/docs/firestore/query-data/get-data (Accessed: 9 March 2021).
+
+[7] - Manage Firestore Data
+Add data to Cloud Firestore  |  Firebase
+Add data to Cloud Firestore  |  Firebase (2021). Available at: https://firebase.google.com/docs/firestore/manage-data/add-data (Accessed: 9 March 2021).
+"""
 
 @app.route("/register", methods = ['POST'])
 def register_post():
@@ -135,16 +129,16 @@ def register_post():
     if 'file' in request.files:
         file = request.files['file']
 
-        # Saving file to server
-        if file.filename != '' and file and allowed_file(file.filename):
-            img_change = True
+        # [4] Saving file to server
+        if file and file.filename != '' and check_file_eligibility(file.filename):
+
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-            # Upload the saved file to google cloud storage
+            # [5] Upload the saved file to google cloud storage
             bucket = storage_client.bucket(config['google_cloud']['bucket_name'])
             source_file_name = os.path.join(app.config['UPLOAD_FOLDER'], filename)  # Uploading recently saved file
-            destination_blob_name = filename + "-" + str(uuid.uuid4())  # destination file name
+            destination_blob_name = "profile_pictures/" + filename + "-" + str(uuid.uuid4())              # destination file name
 
             blob = bucket.blob(destination_blob_name)
             blob.upload_from_filename(source_file_name);
@@ -153,15 +147,15 @@ def register_post():
             # Delete the local file
             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-    # Check if the id matches with any of the documents
+    # [6] Check if the id matches with any of the documents
     docs = db.collection('users').where("id", "==", user_id).get()
-    print(len(docs))
+
     if len(docs) != 0 :
         return jsonify({'status' : 'failed', 'err_msg' : 'The ID already exists'})
 
-    # Check if the username matches with any of documents
+    # [6] Check if the username matches with any of documents
     docs = db.collection('users').where("username", "==", username).get()
-    print(len(docs))
+
     if len(docs) != 0 :
         return jsonify({'status' : 'failed', 'err_msg' : 'The username already exists'})
 
@@ -174,7 +168,7 @@ def register_post():
         'timestamp': (str(datetime.datetime.now()).split("."))[0]
     }
 
-    # Add to firestore collection posts - document id will be id provided by user
+    # [7] Add to firestore collection posts - document id will be id provided by user
     db.collection('users').document(user_id).set(new_user)
 
     return jsonify({'status': "success"})
@@ -187,7 +181,7 @@ def edit_password() :
 
     if validate_logged_in_status() == True :
 
-        #Variable sanitizaztion
+        # Variable sanitizaztion
         user_id = session['id']
         old_password = request.form['old_password']
         new_password = request.form['new_password']
@@ -196,17 +190,17 @@ def edit_password() :
         doc = db.collection("users").document(user_id).get();
         user_doc = doc.to_dict()
 
-        #Password match
+        # Password match
         if user_doc['password'] == old_password :
 
-            #Update the password for this user
+            # Update the password for this user
             db.collection("users").document(user_id).set({
                 'password' : new_password
             }, merge=True)
 
             return jsonify({'status':'success'})
         else:
-            #Old password did not match with the database entry
+            # Old password did not match with the database entry
             return jsonify({'status':'failed', 'err_msg':"The old password is incorrect"})
 
     else :
@@ -231,7 +225,10 @@ def logout():
 
 @app.route("/forum", methods=['GET'])
 def forum_get():
-    return render_template("forum.html")
+    if validate_logged_in_status():
+        return render_template("forum.html")
+    else :
+        return redirect("/login", code=304);
 
 
 @app.route("/forum", methods=['POST'])
@@ -242,30 +239,29 @@ def forum_post():
     subject = request.form['post_subject']
     message = request.form['post_message']
 
-    #Checking the status of file
-    if 'file' not in request.files:
-        return ({"status": "failed", "err_msg": "No file found. Please try again"});
-    file = request.files['file']
+    image_public_url = "";
 
-    if file.filename == '':
-        return ({"status": "failed", "err_msg": "Please select a file and try again"});
+    # Checking the status of file
+    if 'file' in request.files:
+        file = request.files['file']
 
-    # Saving file to server
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        # Saving file to server
+        if file and file.filename != '' and check_file_eligibility(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-        # Upload the saved file to google cloud storage
-        bucket = storage_client.bucket(config['google_cloud']['bucket_name'])
-        source_file_name = os.path.join(app.config['UPLOAD_FOLDER'], filename)  # Uploading recently saved file
-        destination_blob_name = filename + "-" + str(uuid.uuid4())  # destination file name
+            # Upload the saved file to google cloud storage
+            bucket = storage_client.bucket(config['google_cloud']['bucket_name'])
+            source_file_name = os.path.join(app.config['UPLOAD_FOLDER'], filename)  # Uploading recently saved file
+            destination_blob_name = filename + "-" + str(uuid.uuid4())  # destination file name
 
-        blob = bucket.blob(destination_blob_name)
-        blob.upload_from_filename(source_file_name);
-        blob.make_public()
+            blob = bucket.blob(destination_blob_name)
+            blob.upload_from_filename(source_file_name);
+            blob.make_public()
+            image_public_url = blob.public_url
 
-        # Delete the local file
-        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            # Delete the local file
+            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
     timestamp = (str(datetime.datetime.now()).split("."))[0]
 
@@ -275,7 +271,7 @@ def forum_post():
         'post_id' : post_id,
         'subject' : subject,
         'message' : message,
-        'image'   : blob.public_url,
+        'image'   : image_public_url,
         'timestamp' : timestamp
     }
 
@@ -300,7 +296,7 @@ def edit_post():
         file = request.files['file']
 
         # Saving file to server
-        if file.filename != '' and file and allowed_file(file.filename):
+        if file.filename != '' and file and check_file_eligibility(file.filename):
             img_change = True
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -346,12 +342,24 @@ def user_page_get():
         return redirect("/login", code=304);
 
 
+"""
+[9], [10]
+"""
 @app.route("/posts/all", methods = ["GET"])
 def all_posts_get():
     docs = db.collection('posts').order_by('timestamp', direction=firestore.Query.DESCENDING).limit(10).stream()
+
     posts = [];
     for doc in docs :
         post = doc.to_dict()
+
+        # Get posted by user's image
+        user_doc = db.collection('users').document(post['user_id']).get()
+        if user_doc.exists:
+            user_doc_data = user_doc.to_dict();
+            post['user_image'] = user_doc_data['profile_picture']
+            post['username'] = user_doc_data['username']
+
         posts.append(post)
 
     return jsonify({'status':'success', 'posts':posts})
@@ -377,24 +385,11 @@ def post_get(id):
     return jsonify({'status': 'success', 'post': post})
 
 
-"""
-Uploading objects  |  Cloud Storage  |  Google Cloud
-Uploading objects  |  Cloud Storage  |  Google Cloud (2021). Available at: https://cloud.google.com/storage/docs/uploading-objects#storage-upload-object-python (Accessed: 9 March 2021).
-"""
-@app.route("/upload", methods=["GET"])
-def upload_blob():
+@app.route("/attributions", methods=['GET'])
+def attributions_get():
+    return render_template('attributions.html')
 
-    """Uploads a file to the bucket."""
-    bucket_name = "forum-307005.appspot.com"
-    source_file_name = "local/path/to/file"
-    destination_blob_name = "storage-object-name"
 
-    bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(destination_blob_name)
-
-    blob.upload_from_filename(source_file_name);
-
-    return jsonify({"status":"success"})
 
 # Checks whether the session data is set or not. Used for authenticated routing
 def validate_logged_in_status():
@@ -406,3 +401,4 @@ def validate_logged_in_status():
 
 if __name__ == "__main__":
     app.run(debug=True)
+

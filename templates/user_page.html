@@ -74,6 +74,10 @@
 
     function edit_password(){
 
+        if(document.getElementById('old_password').value == "" || document.getElementById('new_password').value == ""){
+            return;
+        }
+
         $("#edit_password_btn").html("<i class='fa fa-spinner fa-spin' aria-hidden='true'></i>");
 
         var formData = new FormData();
@@ -143,12 +147,16 @@
 
     function update_post(){
 
-        $("#update_post_btn").html("<i class='fa fa-spinner fa-spin' aria-hidden='true'></i> Saving");
-        let ajaxRequest = new ajaxFunction();
-
         let post_subject = document.getElementById("post_subject").value;
         let post_message = document.getElementById("post_message").value;
         let post_image = document.getElementById("post_image");
+
+        if(post_subject == ""){
+            return;
+        }
+
+        $("#update_post_btn").html("<i class='fa fa-spinner fa-spin' aria-hidden='true'></i> Saving");
+        let ajaxRequest = new ajaxFunction();
 
         var form_data = new FormData();
         form_data.append("post_doc_id", document.getElementById("post_doc_id").value);
@@ -165,6 +173,8 @@
 
                 if(response.status == "success"){
                     document.getElementById("message_posting_form").reset();
+                    document.getElementById("post_doc_id").value = "";
+                    document.getElementById("post_id").value = "";
                     load_user_latest_messages();
 
                 }else{
@@ -243,7 +253,7 @@
 
                                 <div class="form-group mb-3">
                                     <label class="control-label">Message:</label>
-                                    <textarea id="post_message" class="input-md form-control" required></textarea>
+                                    <textarea id="post_message" class="input-md form-control"></textarea>
                                 </div>
 
                                 <div class="form-group mb-3">

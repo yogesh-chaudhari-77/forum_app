@@ -73,6 +73,11 @@
     function send_msg() {
         let ajaxRequest = new ajaxFunction();
         let post_subject = document.getElementById("post_subject").value;
+
+        if(post_subject == ""){
+            return;
+        }
+
         let post_message = document.getElementById("post_message").value;
         let post_image = document.getElementById("post_image");
 
@@ -114,14 +119,18 @@
     function create_post_card(post) {
         var default_img = "data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22574%22%20height%3D%22180%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20574%20180%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_17812173647%20text%20%7B%20fill%3Argba(255%2C255%2C255%2C.75)%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A29pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_17812173647%22%3E%3Crect%20width%3D%22574%22%20height%3D%22180%22%20fill%3D%22%23777%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22212.8125%22%20y%3D%22103.00312500000001%22%3E574x180%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E";
         var image_url = (post.image == "" || post.image == null) ? default_img : post.image;
-        var post_card = "<div class='card mb-3'>" +
+        var post_card = "<div class='card mb-3 border-0'>" +
+        "   <ul class='list-inline'>" +
+                "   <li class='list-inline-item'><img height='30px' width='30px' src='"+post.user_image+"'></img></li>" +
+                "   <li class='list-inline-item'>"+post.username+"</li>" +
+            "   </ul>" +
             "<img class='card-img-top' src='"+image_url+"' alt='Card image cap' max-height='180' max-width='574'>" +
             "<div class='card-body'>" +
             "   <h5 class='card-title'>" + post.subject + "</h5>" +
             "   <p class='card-text'>" + post.message + "</p>" +
             "   <p class='card-text'><small class='text-muted'>Posted on " + post.timestamp + "</small></p>" +
             "</div>" +
-            "</div>";
+            "</div><hr/>";
 
         return post_card;
     }
@@ -164,12 +173,12 @@
 
                                 <div class="form-group mb-3">
                                     <label class="control-label">Message:</label>
-                                    <textarea id="post_message" class="input-md form-control" required></textarea>
+                                    <textarea id="post_message" class="input-md form-control"></textarea>
                                 </div>
 
                                 <div class="form-group mb-3">
                                     <label class="control-label">Image:</label>
-                                    <input type="file" id="post_image" class="input-md form-control" required />
+                                    <input type="file" id="post_image" class="input-md form-control"/>
                                 </div>
 
                                 <div class="form-group mb-3">

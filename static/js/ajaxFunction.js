@@ -1,4 +1,4 @@
-/*  
+/*  [8]
     AJAX - Browser Support - Tutorialspoint
     AJAX - Browser Support - Tutorialspoint (2021). Available at: https://www.tutorialspoint.com/ajax/ajax_browser_support.htm (Accessed: 3 March 2021).
 */

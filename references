@@ -1,42 +1,63 @@
+[1] - Setting up firebase database authentication
+Add the Firebase Admin SDK to your server
+Add the Firebase Admin SDK to your server (2021). Available at: https://firebase.google.com/docs/admin/setup (Accessed: 9 March 2021).
+
+[2] - Authenticating google cloud storage
+Authenticating as a service account  |  Authentication  |  Google Cloud
+Authenticating as a service account  |  Authentication  |  Google Cloud (2021). Available at: https://cloud.google.com/docs/authentication/production (Accessed: 7 April 2021).
+
+[3] - Setting global context processor
+Templates — Flask Documentation (1.1.x)
+Templates — Flask Documentation (1.1.x) (2021). Available at: https://flask.palletsprojects.com/en/1.1.x/templating/ (Accessed: 9 March 2021).
+
+[4] - Uploading File
+Uploading Files — Flask Documentation (1.1.x)
+Uploading Files — Flask Documentation (1.1.x) (2021). Available at: https://flask.palletsprojects.com/en/1.1.x/patterns/fileuploads/ (Accessed: 9 March 2021).
+Function that checks that file being uploaded is one of allowed types
+
+[5] - Uploading Objects to Google Cloud
+Uploading objects  |  Cloud Storage  |  Google Cloud
+Uploading objects  |  Cloud Storage  |  Google Cloud (2021). Available at: https://cloud.google.com/storage/docs/uploading-objects#storage-upload-object-python (Accessed: 9 March 2021).
+
+[6] - Read Firestore Data
+Get data with Cloud Firestore  |  Firebase
+Get data with Cloud Firestore  |  Firebase (2021). Available at: https://firebase.google.com/docs/firestore/query-data/get-data (Accessed: 9 March 2021).
+
+[7] - Manage Firestore Data
+Add data to Cloud Firestore  |  Firebase
+Add data to Cloud Firestore  |  Firebase (2021). Available at: https://firebase.google.com/docs/firestore/manage-data/add-data (Accessed: 9 March 2021).
+
+[8] - AJAX - Browser Support - Tutorialspoint
+AJAX - Browser Support - Tutorialspoint (2021). Available at: https://www.tutorialspoint.com/ajax/ajax_browser_support.htm (Accessed: 3 March 2021).
+
+[9] - Order and limit data with Cloud Firestore  |  Firebase
+Order and limit data with Cloud Firestore  |  Firebase (2021). Available at: https://firebase.google.com/docs/firestore/query-data/order-limit-data (Accessed: 9 March 2021).
+
+[10] - Perform simple and compound queries in Cloud Firestore  |  Firebase
+Perform simple and compound queries in Cloud Firestore  |  Firebase (2021). Available at: https://firebase.google.com/docs/firestore/query-data/queries (Accessed: 9 March 2021).
+
 Important resource for deployment guide
 https://www.freecodecamp.org/news/how-to-build-a-web-application-using-flask-and-deploy-it-to-the-cloud-3551c985e492/
-
-AJAX - Browser Support - Tutorialspoint
-AJAX - Browser Support - Tutorialspoint (2021). Available at: https://www.tutorialspoint.com/ajax/ajax_browser_support.htm (Accessed: 3 March 2021).
 
 Mark Otto, A. B. C.
 Mark Otto, a. (2021) Introduction, Getbootstrap.com. Available at: https://getbootstrap.com/docs/4.0/getting-started/introduction/ (Accessed: 9 March 2021).
 
-Add data to Cloud Firestore  |  Firebase
-Add data to Cloud Firestore  |  Firebase (2021). Available at: https://firebase.google.com/docs/firestore/manage-data/add-data (Accessed: 9 March 2021).
-
-Get data with Cloud Firestore  |  Firebase
-Get data with Cloud Firestore  |  Firebase (2021). Available at: https://firebase.google.com/docs/firestore/query-data/get-data (Accessed: 9 March 2021).
-
-Order and limit data with Cloud Firestore  |  Firebase
-Order and limit data with Cloud Firestore  |  Firebase (2021). Available at: https://firebase.google.com/docs/firestore/query-data/order-limit-data (Accessed: 9 March 2021).
-
-Perform simple and compound queries in Cloud Firestore  |  Firebase
-Perform simple and compound queries in Cloud Firestore  |  Firebase (2021). Available at: https://firebase.google.com/docs/firestore/query-data/queries (Accessed: 9 March 2021).
-
-Manage indexes in Cloud Firestore  |  Firebase
-Manage indexes in Cloud Firestore  |  Firebase (2021). Available at: https://firebase.google.com/docs/firestore/query-data/indexing (Accessed: 9 March 2021).
-
+[11] - Introduction to Flask
 Quickstart — Flask Documentation (1.1.x)
-       Quickstart — Flask Documentation (1.1.x) (2021). Available at: https://flask.palletsprojects.com/en/1.1.x/quickstart/#static-files (Accessed: 9 March 2021).
+Quickstart — Flask Documentation (1.1.x) (2021). Available at: https://flask.palletsprojects.com/en/1.1.x/quickstart/#static-files (Accessed: 9 March 2021).
 
-
-Context Processors
+[12] - Context Processors
 Templates — Flask Documentation (1.1.x)
 Templates — Flask Documentation (1.1.x) (2021). Available at: https://flask.palletsprojects.com/en/1.1.x/templating/ (Accessed: 9 March 2021).
 
 
-"""
-Uploading objects  |  Cloud Storage  |  Google Cloud
-Uploading objects  |  Cloud Storage  |  Google Cloud (2021). Available at: https://cloud.google.com/storage/docs/uploading-objects#storage-upload-object-python (Accessed: 9 March 2021).
-"""
-
-"""
-Uploading Files — Flask Documentation (1.1.x)
-Uploading Files — Flask Documentation (1.1.x) (2021). Available at: https://flask.palletsprojects.com/en/1.1.x/patterns/fileuploads/ (Accessed: 9 March 2021).
-"""
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+<div>Icons made by <a href="https://www.flaticon.com/authors/vectors-market" title="Vectors Market">Vectors Market</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+<div>Icons made by <a href="https://www.flaticon.com/authors/pixel-buddha" title="Pixel Buddha">Pixel Buddha</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>

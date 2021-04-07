@@ -36,14 +36,17 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          {% if session and 'id' in session %}
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="{{config.application.base_url}}forum"><i class="fa fa-home" aria-hidden="true"></i></a>
           </li>
-          {% if session and 'id' in session %}
           <li class="nav-item">
             <a class="nav-link" aria-current="page" href="{{config.application.base_url}}user_page"><i class="fa fa-user" aria-hidden="true"></i></a>
           </li>
           {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/attributions">Attributions</a>
+          </li>
         </ul>
 
         {% if 'id' not in session %}
