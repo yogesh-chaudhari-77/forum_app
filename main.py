@@ -12,6 +12,9 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 from google.cloud import storage
 
+# Task 2
+from google.cloud import bigquery
+
 """
 Add the Firebase Admin SDK to your server
 Add the Firebase Admin SDK to your server (2021). Available at: https://firebase.google.com/docs/admin/setup (Accessed: 9 March 2021).
@@ -25,6 +28,12 @@ Authenticating as a service account  |  Authentication  |  Google Cloud
 Authenticating as a service account  |  Authentication  |  Google Cloud (2021). Available at: https://cloud.google.com/docs/authentication/production (Accessed: 7 April 2021).
 """
 storage_client = storage.Client.from_service_account_json('config/forum-google-cloud-service-account.json')
+
+"""
+Authenticating with a service account key file  |  BigQuery
+Authenticating with a service account key file  |  BigQuery (2021). Available at: https://cloud.google.com/bigquery/docs/authentication/service-account-file (Accessed: 7 April 2021).
+"""
+bigquery_client = bigquery.Client.from_service_account_json('config/forum-google-cloud-service-account.json')
 
 
 app = Flask(__name__)
@@ -390,6 +399,85 @@ def attributions_get():
     return render_template('attributions.html')
 
 
+@app.route("/query1", methods=['GET'])
+def query_1():
+    query = ('select * '
+             'from '
+             '(select '
+             '      time_ref, sum(value) as trade_value '
+             '      from `aerobic-star-307900.country_classification.gsquarterlySeptember20` '
+             '      group by time_ref'
+             ') '
+             'order by trade_value desc '
+             'limit 10'
+             '')
+    query_job = bigquery_client.query(query)
+    rows = query_job.result()
+
+    result = []
+    i = 1
+    for row in rows:
+        print(row.time_ref, row.trade_value)
+        result.append({'sr' : i, 'time_ref' : row.time_ref, 'trade_value' : row.trade_value })
+        i = i + 1
+
+    return render_template('task-2/query1.html', result=result)
+
+@app.route("/query2", methods=['GET'])
+def query_2():
+    query = (''
+             'Select '
+             'A.country_code, B.country_code,'
+             '(select country_label from `aerobic-star-307900.country_classification.country_classification` where country_code = A.country_code) as country_label ,'
+             ' A.product_type, A.country_imports_value, B.country_emports_value, (A.country_imports_value - B.country_emports_value) as deficit_value, A.status '
+             'from '
+             '(SELECT country_code, product_type, status, sum(value) as country_imports_value from `aerobic-star-307900.country_classification.gsquarterlySeptember20` where account = \'Imports\' and product_type = \'Goods\' and time_ref between 201401 and 201612 and status = \'F\' group by country_code, product_type, status ) A '
+             ' INNER JOIN '
+             ' (SELECT country_code, sum(value) as country_emports_value from `aerobic-star-307900.country_classification.gsquarterlySeptember20` where account = \'Exports\' and product_type = \'Goods\' and time_ref between 201401 and 201612 and status = \'F\' group by country_code) B '
+             ' ON '
+             'A.country_code = B.country_code '
+             'order by deficit_value desc '
+              'limit 50 '
+            )
+    query_job = bigquery_client.query(query)
+    rows = query_job.result()
+
+    result = []
+    i = 1
+    for row in rows:
+        result.append({'sr' : i, 'country_label' : row.country_label, 'product_type' : row.product_type, 'deficit_value' : row.deficit_value, 'status' : row.status})
+        i = i + 1
+
+    return render_template('task-2/query2.html', result=result)
+
+
+@app.route("/query3", methods=['GET'])
+def query_3():
+    query = (''
+             'select '
+             '(select service_label from `aerobic-star-307900.country_classification.services_classification` where code = A.code) as service_label, '
+             'B.service_export_value as service_export_value, '
+             'A.service_import_value as service_import_value, '
+             '(B.service_export_value - A.service_import_value) as surplus_value '
+             'from '
+             '(SELECT code, sum(value) as service_import_value from `aerobic-star-307900.country_classification.query_3_reduced_table` where account = \'Imports\' group by code ) A '
+            'INNER JOIN'
+            '(SELECT code, sum(value) as service_export_value from `aerobic-star-307900.country_classification.query_3_reduced_table` where account = \'Exports\' group by code ) B '
+            'on A.code = B.code '
+            'order by surplus_value desc '
+            'limit 30 '
+             )
+
+    query_job = bigquery_client.query(query)
+    rows = query_job.result()
+
+    result = []
+    i = 1
+    for row in rows:
+        result.append({'sr' : i, 'service_label' : row.service_label, 'surplus_value' : row.surplus_value })
+        i = i + 1
+
+    return render_template('task-2/query3.html', result=result)
 
 # Checks whether the session data is set or not. Used for authenticated routing
 def validate_logged_in_status():
