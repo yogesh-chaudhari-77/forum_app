@@ -142,11 +142,10 @@ def register_post():
         if file and file.filename != '' and check_file_eligibility(file.filename):
 
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
             # [5] Upload the saved file to google cloud storage
             bucket = storage_client.bucket(config['google_cloud']['bucket_name'])
-            source_file_name = os.path.join(app.config['UPLOAD_FOLDER'], filename)  # Uploading recently saved file
+            source_file_name = filename  # Uploading recently saved file
             destination_blob_name = "profile_pictures/" + filename + "-" + str(uuid.uuid4())              # destination file name
 
             blob = bucket.blob(destination_blob_name)
@@ -154,7 +153,7 @@ def register_post():
             blob.make_public()
 
             # Delete the local file
-            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            os.remove(filename);
 
     # [6] Check if the id matches with any of the documents
     docs = db.collection('users').where("id", "==", user_id).get()
@@ -240,6 +239,10 @@ def forum_get():
         return redirect("/login", code=304);
 
 
+"""
+[4] - Uploading File
+[5] - Uploading Objects to Google Cloud
+"""
 @app.route("/forum", methods=['POST'])
 def forum_post():
 
@@ -257,11 +260,10 @@ def forum_post():
         # Saving file to server
         if file and file.filename != '' and check_file_eligibility(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
             # Upload the saved file to google cloud storage
             bucket = storage_client.bucket(config['google_cloud']['bucket_name'])
-            source_file_name = os.path.join(app.config['UPLOAD_FOLDER'], filename)  # Uploading recently saved file
+            source_file_name = filename                                 # Uploading recently saved file
             destination_blob_name = filename + "-" + str(uuid.uuid4())  # destination file name
 
             blob = bucket.blob(destination_blob_name)
@@ -270,7 +272,7 @@ def forum_post():
             image_public_url = blob.public_url
 
             # Delete the local file
-            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            os.remove(filename)
 
     timestamp = (str(datetime.datetime.now()).split("."))[0]
 
@@ -290,6 +292,10 @@ def forum_post():
     return jsonify({ 'status' : "success", 'post' : message})
 
 
+"""
+[4] - Uploading File
+[5] - Uploading Objects to Google Cloud
+"""
 @app.route("/edit_post", methods=['PUT'])
 def edit_post():
 
@@ -308,11 +314,10 @@ def edit_post():
         if file.filename != '' and file and check_file_eligibility(file.filename):
             img_change = True
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
             # Upload the saved file to google cloud storage
             bucket = storage_client.bucket(config['google_cloud']['bucket_name'])
-            source_file_name = os.path.join(app.config['UPLOAD_FOLDER'], filename)  # Uploading recently saved file
+            source_file_name = filename                                 # Uploading recently saved file
             destination_blob_name = filename + "-" + str(uuid.uuid4())  # destination file name
 
             blob = bucket.blob(destination_blob_name)
@@ -320,7 +325,7 @@ def edit_post():
             blob.make_public()
 
             # Delete the local file
-            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            os.remove(filename)
 
     timestamp = (str(datetime.datetime.now()).split("."))[0]
 
@@ -383,6 +388,7 @@ def user_posts_get():
         posts.append(post)
 
     return jsonify({'status':'success', 'posts':posts})
+
 
 @app.route("/posts/<id>", methods=['GET'])
 def post_get(id):
