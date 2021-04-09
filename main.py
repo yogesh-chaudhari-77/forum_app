@@ -142,6 +142,7 @@ def register_post():
         if file and file.filename != '' and check_file_eligibility(file.filename):
 
             filename = secure_filename(file.filename)
+            file.save(os.path.join('/tmp/', filename));
 
             # [5] Upload the saved file to google cloud storage
             bucket = storage_client.bucket(config['google_cloud']['bucket_name'])
@@ -149,11 +150,11 @@ def register_post():
             destination_blob_name = "profile_pictures/" + filename + "-" + str(uuid.uuid4())              # destination file name
 
             blob = bucket.blob(destination_blob_name)
-            blob.upload_from_filename(source_file_name);
+            blob.upload_from_filename(os.path.join('/tmp/', source_file_name));
             blob.make_public()
 
             # Delete the local file
-            os.remove(filename);
+            os.remove(os.path.join('/tmp/', filename));
 
     # [6] Check if the id matches with any of the documents
     docs = db.collection('users').where("id", "==", user_id).get()
@@ -260,19 +261,19 @@ def forum_post():
         # Saving file to server
         if file and file.filename != '' and check_file_eligibility(file.filename):
             filename = secure_filename(file.filename)
-
+            file.save(os.path.join('/tmp/', filename));
             # Upload the saved file to google cloud storage
             bucket = storage_client.bucket(config['google_cloud']['bucket_name'])
             source_file_name = filename                                 # Uploading recently saved file
             destination_blob_name = filename + "-" + str(uuid.uuid4())  # destination file name
 
             blob = bucket.blob(destination_blob_name)
-            blob.upload_from_filename(source_file_name);
+            blob.upload_from_filename(os.path.join('/tmp/', source_file_name));
             blob.make_public()
             image_public_url = blob.public_url
 
             # Delete the local file
-            os.remove(filename)
+            os.remove(os.path.join('/tmp/', filename))
 
     timestamp = (str(datetime.datetime.now()).split("."))[0]
 
@@ -283,7 +284,9 @@ def forum_post():
         'subject' : subject,
         'message' : message,
         'image'   : image_public_url,
-        'timestamp' : timestamp
+        'timestamp' : timestamp,
+        'username' : session['username'],
+        'user_image' : session['profile_picture']
     }
 
     # Add to firestore collection posts
@@ -314,6 +317,7 @@ def edit_post():
         if file.filename != '' and file and check_file_eligibility(file.filename):
             img_change = True
             filename = secure_filename(file.filename)
+            file.save(os.path.join('/tmp/', filename));
 
             # Upload the saved file to google cloud storage
             bucket = storage_client.bucket(config['google_cloud']['bucket_name'])
@@ -321,11 +325,11 @@ def edit_post():
             destination_blob_name = filename + "-" + str(uuid.uuid4())  # destination file name
 
             blob = bucket.blob(destination_blob_name)
-            blob.upload_from_filename(source_file_name);
+            blob.upload_from_filename(os.path.join('/tmp/', source_file_name));
             blob.make_public()
 
             # Delete the local file
-            os.remove(filename)
+            os.remove(os.path.join('/tmp/', filename))
 
     timestamp = (str(datetime.datetime.now()).split("."))[0]
 
@@ -381,7 +385,7 @@ def all_posts_get():
 
 @app.route("/posts/user", methods = ["GET"])
 def user_posts_get():
-    docs = db.collection('posts').where('user_id', '==', session['id']).order_by('timestamp', direction=firestore.Query.DESCENDING).limit(10).stream()
+    docs = db.collection('posts').where('user_id', '==', session['id']).order_by('timestamp', direction=firestore.Query.DESCENDING).stream()
     posts = [];
     for doc in docs :
         post = doc.to_dict()
@@ -466,9 +470,9 @@ def query_3():
              'A.service_import_value as service_import_value, '
              '(B.service_export_value - A.service_import_value) as surplus_value '
              'from '
-             '(SELECT code, sum(value) as service_import_value from `aerobic-star-307900.country_classification.query_3_reduced_table` where account = \'Imports\' group by code ) A '
+             '(SELECT code, sum(value) as service_import_value from `aerobic-star-307900.country_classification.query_3_reduced_table` where account = \'Imports\' and product_type = \'Services\'  group by code ) A '
             'INNER JOIN'
-            '(SELECT code, sum(value) as service_export_value from `aerobic-star-307900.country_classification.query_3_reduced_table` where account = \'Exports\' group by code ) B '
+            '(SELECT code, sum(value) as service_export_value from `aerobic-star-307900.country_classification.query_3_reduced_table` where account = \'Exports\' and product_type = \'Services\'  group by code ) B '
             'on A.code = B.code '
             'order by surplus_value desc '
             'limit 30 '
