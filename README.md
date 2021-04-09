@@ -91,6 +91,26 @@ Once posted, message fields are stored in the firestore and picture is uploaded 
 7. Run application using python main.py
 
 
+#Images
+* Landing Page
+![Landing page](https://github.com/yogesh-chaudhari-77/forum_app/blob/master/screenshots/1.png)
+
+* Login Page
+![Login Page](https://github.com/yogesh-chaudhari-77/forum_app/blob/master/screenshots/2.png)
+
+* Registration Page
+![Registration Page](https://github.com/yogesh-chaudhari-77/forum_app/blob/master/screenshots/3.png)
+
+* Forum Page
+![Forum Page](https://github.com/yogesh-chaudhari-77/forum_app/blob/master/screenshots/4.png)
+
+* User Area Page
+![User Area Page](https://github.com/yogesh-chaudhari-77/forum_app/blob/master/screenshots/5.png)
+
+* Query Result Page
+![Query Result Page](https://github.com/yogesh-chaudhari-77/forum_app/blob/master/screenshots/6.png)
+
+
 
 # Resources
 
