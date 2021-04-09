@@ -58,16 +58,16 @@ Once posted, message fields are stored in the firestore and picture is uploaded 
     * Move this file to "application_folder/config/" as "forum-google-cloud-service-account.json"
 
 4. Setting up Cloud Storage
-  * Select cloud storage -> create bucket (Alternatively you can use existing bucket)
-  * Provide appropricate bucket name, and Select Region. 
-  * Make sure to change the Access control policy to Fine Grained
-  * Create the bucket by keeping other settings to default.
+   * Select cloud storage -> create bucket (Alternatively you can use existing bucket)
+   * Provide appropricate bucket name, and Select Region. 
+   * Make sure to change the Access control policy to Fine Grained
+   * Create the bucket by keeping other settings to default.
 
 
 5. Updating config.py
-  * Config file is located as /application_folder/config/config file
-  ```
-  config = {
+   * Config file is located as /application_folder/config/config file
+   ```
+   config = {
     "application": {
         "base_url": "http://localhost:3000/",
         "upload_folder": './uploads',
@@ -80,13 +80,13 @@ Once posted, message fields are stored in the firestore and picture is uploaded 
     "google_cloud":{
         "bucket_name": "YOUR-BUCKET-NAME"
     }
-}
-  ```
+   }
+   ```
 6. Install dependancies
-```
-pip install -r requirements.txt
+   ```
+   pip install -r requirements.txt
 
-```
+   ```
 
 7. Run application using python main.py
 
