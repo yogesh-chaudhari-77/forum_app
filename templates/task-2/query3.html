@@ -1,0 +1,38 @@
+{% include ('./partials/header.html') %}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3">
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-lg p-3 mb-5 bg-white rounded">
+                <div class="card-body">
+                    <h5 class="card-title">Query 3</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">*Top 30 services with the highest total trade surplus value</h6>
+
+                    <table class="table table-responsive table-striped table-hover">
+                        <tbody>
+                        <thead class="thead-dark">
+                            <tr>
+                              <th scope="col">#</th>
+                              <th scope="col">Service Label</th>
+                              <th scope="col">Surplus Value</th>
+                            </tr>
+                        </thead>
+                          {% for row in result %}
+                            <tr>
+                              <td>{{ row.sr }}</td>
+                              <td>{{ row.service_label }}</td>
+                              <td>{{ row.surplus_value }}</td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <span class="text-muted"><i>Query 3:. Show top 30 services with the highest total trade surplus value (i.e. export value - import value) in the top 10 time slots of Query Result 1 and the top 50 countries of Query Result 2. Note: Show “service_label” (full service name) and “trade surplus value” (in a descending order) in your result.</i></span>
+    <br/><br/><br/>
+</div>
+{% include ('./partials/footer.html') %}

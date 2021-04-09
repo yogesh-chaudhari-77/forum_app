@@ -16,3 +16,60 @@ handlers:
     
 -   url /.*
     script: auto
+
+1)
+select * from (select time_ref, sum(value) as trade_value from `aerobic-star-307900.country_classification.gsquarterlySeptember20` group by time_ref) order by trade_value desc limit 10
+
+2)
+Select
+A.country_code, B.country_code, A.product_type, A.country_imports_value, B.country_emports_value, (A.country_imports_value - B.country_emports_value) as deficit_value, A.status
+from
+(SELECT country_code, product_type, status, sum(value) as country_imports_value from `aerobic-star-307900.country_classification.gsquarterlySeptember20` where account = 'Imports' and product_type = 'Goods' and time_ref between 201401 and 201612 and status = 'F' group by country_code, product_type, status ) A
+INNER JOIN
+(SELECT country_code, sum(value) as country_emports_value from `aerobic-star-307900.country_classification.gsquarterlySeptember20` where account = 'Exports' and product_type = 'Goods' and time_ref between 201401 and 201612 and status = 'F' group by country_code) B
+ON
+A.country_code = B.country_code
+order by deficit_value desc
+limit 50
+
+3)
+Part 1 - Reduced Table - saved as view as query_3_reduced_table
+SELECT *
+FROM
+`aerobic-star-307900.country_classification.gsquarterlySeptember20`
+WHERE
+country_code IN (
+    Select A.country_code
+    from
+    (SELECT country_code, product_type, status, sum(value) as country_imports_value from `aerobic-star-307900.country_classification.gsquarterlySeptember20` where account = 'Imports' and product_type = 'Goods' and time_ref between 201401 and 201612 and status = 'F' group by country_code, product_type, status ) A
+    INNER JOIN
+    (SELECT country_code, sum(value) as country_emports_value from `aerobic-star-307900.country_classification.gsquarterlySeptember20` where account = 'Exports' and product_type = 'Goods' and time_ref between 201401 and 201612 and status = 'F' group by country_code) B
+    ON
+    A.country_code = B.country_code
+    order by A.country_imports_value - B.country_emports_value desc
+    limit 50
+)
+AND
+time_ref IN (
+    select time_ref
+    from
+    (   select time_ref, sum(value) as trade_value
+        from `aerobic-star-307900.country_classification.gsquarterlySeptember20`
+        group by time_ref
+    )
+    order by trade_value desc limit 10
+)
+
+
+select
+(select service_label from `aerobic-star-307900.country_classification.services_classification` where code = A.code) as service_label,
+B.service_export_value as service_export_value,
+A.service_import_value as service_import_value,
+(B.service_export_value - A.service_import_value) as surplus_value
+from
+    (SELECT code, sum(value) as service_import_value from `aerobic-star-307900.country_classification.query_3_reduced_table` where account = 'Imports' group by code ) A
+    INNER JOIN
+    (SELECT code, sum(value) as service_export_value from `aerobic-star-307900.country_classification.query_3_reduced_table` where account = 'Exports' group by code ) B
+    on A.code = B.code
+order by surplus_value desc
+limit 30
