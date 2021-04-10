@@ -85,13 +85,13 @@ Once posted, message fields are stored in the firestore and picture is uploaded 
 6. Install dependancies
    ```
    pip install -r requirements.txt
-
+   
    ```
 
 7. Run application using python main.py
 
 
-#Images
+# Images
 * Landing Page
 ![Landing page](https://github.com/yogesh-chaudhari-77/forum_app/blob/master/screenshots/1.png)
 
